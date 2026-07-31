@@ -182,6 +182,42 @@ on public.hero_gallery(display_order);
 
 create index if not exists hero_gallery_active_idx
 on public.hero_gallery(is_active);
+
+-- ============================================================
+-- ANNOUNCEMENTS
+-- ============================================================
+
+create table if not exists public.announcements (
+
+    id uuid primary key default gen_random_uuid(),
+
+    message text not null,
+
+    display_order integer not null default 0,
+
+    is_active boolean not null default true,
+
+    created_at timestamptz not null default timezone('utc', now()),
+
+    updated_at timestamptz not null default timezone('utc', now())
+
+);
+
+drop trigger if exists announcements_updated_at
+on public.announcements;
+
+create trigger announcements_updated_at
+before update
+on public.announcements
+for each row
+execute function public.update_updated_at_column();
+
+create index if not exists announcements_order_idx
+on public.announcements(display_order);
+
+create index if not exists announcements_active_idx
+on public.announcements(is_active);
+
 -- ============================================================
 -- NOTICES
 -- ============================================================
@@ -627,6 +663,7 @@ on public.audit_logs(created_at desc);
 alter table public.admin_users enable row level security;
 alter table public.hero_settings enable row level security;
 alter table public.hero_gallery enable row level security;
+alter table public.announcements enable row level security;
 alter table public.notices enable row level security;
 alter table public.statistics enable row level security;
 alter table public.courses enable row level security;
@@ -648,6 +685,11 @@ create policy "public_read_hero_gallery"
 on public.hero_gallery
 for select
 using (true);
+
+create policy "public_read_announcements"
+on public.announcements
+for select
+using (is_active = true);
 
 create policy "public_read_notices"
 on public.notices

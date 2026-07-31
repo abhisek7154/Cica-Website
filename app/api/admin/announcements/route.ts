@@ -1,109 +1,104 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSupabaseAdminClient } from "@/lib/supabase-admin";
+import {
+  createAnnouncement,
+  deleteAnnouncement,
+  listAnnouncements,
+  updateAnnouncement
+} from "@/lib/announcement-service";
+import {
+  announcementSchema,
+  announcementUpdateSchema
+} from "@/lib/validation";
+
+export const runtime = "nodejs";
 
 export async function GET() {
   try {
-    const supabase = getSupabaseAdminClient();
-
-    const { data, error } = await supabase
-      .from("announcements")
-      .select("*")
-      .order("display_order", { ascending: true });
-
-    if (error) {
-      throw error;
-    }
-
-    return NextResponse.json({
-      announcements: data ?? [],
-    });
+    const announcements = await listAnnouncements();
+    return NextResponse.json({ announcements });
   } catch (error) {
-    console.error(error);
-
     return NextResponse.json(
       {
-        message: "Failed to load announcements.",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to load announcements."
       },
-      {
-        status: 500,
-      }
+      { status: 500 }
     );
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const payload = await request.json();
+    const parsed = announcementSchema.safeParse(payload);
 
-    const supabase = getSupabaseAdminClient();
-
-    const { data, error } = await supabase
-      .from("announcements")
-      .insert({
-        message: body.message,
-        display_order: body.display_order ?? 1,
-        is_active: body.is_active ?? true,
-      })
-      .select()
-      .single();
-
-    if (error) {
-      throw error;
+    if (!parsed.success) {
+      return NextResponse.json(
+        {
+          message:
+            parsed.error.issues[0]?.message ?? "Invalid announcement payload."
+        },
+        { status: 400 }
+      );
     }
 
+    const announcement = await createAnnouncement(parsed.data);
     return NextResponse.json({
       message: "Announcement created successfully.",
-      announcement: data,
+      announcement
     });
   } catch (error) {
-    console.error(error);
-
     return NextResponse.json(
       {
-        message: "Failed to create announcement.",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to create announcement."
       },
-      {
-        status: 500,
-      }
+      { status: 500 }
     );
   }
 }
 
 export async function PUT(request: NextRequest) {
   try {
-    const body = await request.json();
+    const payload = await request.json();
+    const parsed = announcementUpdateSchema.safeParse(payload);
 
-    const supabase = getSupabaseAdminClient();
+    if (!parsed.success) {
+      return NextResponse.json(
+        {
+          message:
+            parsed.error.issues[0]?.message ?? "Invalid announcement payload."
+        },
+        { status: 400 }
+      );
+    }
 
-    const { data, error } = await supabase
-      .from("announcements")
-      .update({
-        message: body.message,
-        display_order: body.display_order,
-        is_active: body.is_active,
-      })
-      .eq("id", body.id)
-      .select()
-      .single();
+    const announcement = await updateAnnouncement(parsed.data.id, parsed.data);
 
-    if (error) {
-      throw error;
+    if (!announcement) {
+      return NextResponse.json(
+        { message: "Announcement not found." },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json({
       message: "Announcement updated successfully.",
-      announcement: data,
+      announcement
     });
   } catch (error) {
-    console.error(error);
-
     return NextResponse.json(
       {
-        message: "Failed to update announcement.",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to update announcement."
       },
-      {
-        status: 500,
-      }
+      { status: 500 }
     );
   }
 }
@@ -112,30 +107,34 @@ export async function DELETE(request: NextRequest) {
   try {
     const { id } = await request.json();
 
-    const supabase = getSupabaseAdminClient();
+    if (typeof id !== "string" || id.trim().length === 0) {
+      return NextResponse.json(
+        { message: "Announcement ID is required." },
+        { status: 400 }
+      );
+    }
 
-    const { error } = await supabase
-      .from("announcements")
-      .delete()
-      .eq("id", id);
+    const deleted = await deleteAnnouncement(id);
 
-    if (error) {
-      throw error;
+    if (!deleted) {
+      return NextResponse.json(
+        { message: "Announcement not found." },
+        { status: 404 }
+      );
     }
 
     return NextResponse.json({
-      message: "Announcement deleted successfully.",
+      message: "Announcement deleted successfully."
     });
   } catch (error) {
-    console.error(error);
-
     return NextResponse.json(
       {
-        message: "Failed to delete announcement.",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Failed to delete announcement."
       },
-      {
-        status: 500,
-      }
+      { status: 500 }
     );
   }
 }

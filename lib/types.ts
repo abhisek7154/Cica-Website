@@ -63,6 +63,15 @@ export interface NoticeItem {
   createdAt?: string;
 }
 
+export interface AnnouncementItem {
+  id: string;
+  message: string;
+  displayOrder: number;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface StaffMember {
   id: string;
   name: string;

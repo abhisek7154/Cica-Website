@@ -7,17 +7,27 @@ import { NoticeBoard } from "@/components/notice-board";
 import { CounterSection } from "@/components/counter-section";
 import { CourseSection } from "@/components/course-section";
 
+import { listActiveAnnouncements } from "@/lib/announcement-service";
 import { listNotices } from "@/lib/events-notices-service";
+import type { AnnouncementItem } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const notices = (await listNotices()).slice(0, 4);
+  let announcements: AnnouncementItem[] = [];
+
+  try {
+    announcements = await listActiveAnnouncements();
+  } catch (error) {
+    console.error("Failed to load announcements for homepage", error);
+  }
+
+  const notices = await listNotices();
 
   return (
     <>
       {/* Top Announcement */}
-      <AnnouncementBar />
+      <AnnouncementBar announcements={announcements} />
 
       {/* Floating Navbar */}
       <Navbar />
@@ -26,7 +36,7 @@ export default async function HomePage() {
       <HeroSection />
 
       {/* Notice Board */}
-      <NoticeBoard initialNotices={notices} />
+      <NoticeBoard initialNotices={notices.slice(0, 4)} />
 
       {/* Counter */}
       <CounterSection />

@@ -44,6 +44,16 @@ export const noticeSchema = z.object({
   ])
 });
 
+export const announcementSchema = z.object({
+  message: z.string().trim().min(3, "Announcement message is required."),
+  displayOrder: z.number().int().min(0, "Display order must be zero or greater."),
+  isActive: z.boolean()
+});
+
+export const announcementUpdateSchema = announcementSchema.extend({
+  id: z.string().min(1, "Announcement ID is required.")
+});
+
 export const imageSchema = z.object({
   url: assetUrlSchema,
   alt: z.string().min(3),

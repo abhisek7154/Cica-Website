@@ -8,6 +8,7 @@ export function Footer() {
   const rawPhone = siteConfig.socials.whatsapp.replace(/\D/g, "");
   const phone = rawPhone.length === 10 ? `91${rawPhone}` : rawPhone;
   const whatsappHref = `https://wa.me/${phone}?text=Hello%20DM%20Public%20School`;
+  const phoneHref = `tel:${phone.startsWith("+") ? phone : `+${phone}`}`;
 
   return (
     <footer className="border-t border-slate-200 bg-white/80 py-10 dark:border-slate-800 dark:bg-slate-950/70">
@@ -39,10 +40,13 @@ export function Footer() {
                 <Mail className="mt-0.5 h-4 w-4 shrink-0 text-brand-600" />
                 <span>{siteConfig.contact.email}</span>
               </p>
-              <p className="inline-flex items-start gap-2 break-words">
+              <a
+                href={phoneHref}
+                className="inline-flex items-start gap-2 break-words transition hover:text-brand-600 dark:hover:text-brand-300"
+              >
                 <Phone className="mt-0.5 h-4 w-4 shrink-0 text-brand-600" />
                 <span>{siteConfig.contact.phone}</span>
-              </p>
+              </a>
             </div>
           </div>
 

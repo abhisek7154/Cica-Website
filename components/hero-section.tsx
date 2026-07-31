@@ -3,12 +3,13 @@
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { SlidingTabs } from "@/components/sliding-tabs";
+import { Logo } from "@/components/logo";
 
 const heroImages = [
-  "/hero/hero1.jpg",
-  "/hero/hero2.jpg",
-  "/hero/hero3.jpg",
-  "/hero/hero4.jpg",
+  "/images/New Building.jpeg",
+  "/images/indoor_corridor.jpeg",
+  "/images/Republic_day.jpeg",
+  "/images/X_mas.JPG",
 ];
 
 export function HeroSection() {
@@ -48,13 +49,9 @@ export function HeroSection() {
       {/* Hero Content */}
       <div className="relative z-10 flex h-full items-center justify-center px-6">
         <div className="max-w-4xl text-center text-white">
-          <Image
-            src="/logo.png"
-            alt="CICA Institute"
-            width={110}
-            height={110}
-            className="mx-auto mb-6"
-          />
+          <div className="mx-auto mb-6 flex justify-center">
+            <Logo mode="light" variant="hero" size={110} />
+          </div>
 
           <h1 className="text-4xl font-extrabold leading-tight md:text-6xl lg:text-7xl">
             CICA Institute

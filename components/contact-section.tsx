@@ -56,6 +56,7 @@ export function ContactSection({ initialChallenge = fallbackChallenge }: Contact
       form.captchaAnswer.trim().length > 0,
     [form]
   );
+  const phoneHref = `tel:${siteConfig.socials.whatsapp.startsWith("+") ? siteConfig.socials.whatsapp : `+${siteConfig.socials.whatsapp}`}`;
 
   const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -119,9 +120,12 @@ export function ContactSection({ initialChallenge = fallbackChallenge }: Contact
               </p>
             </div>
             <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 dark:border-slate-700 dark:bg-slate-900">
-              <p className="inline-flex break-words items-center gap-2 text-sm font-medium text-slate-800 dark:text-slate-100">
+              <a
+                href={phoneHref}
+                className="inline-flex break-words items-center gap-2 text-sm font-medium text-slate-800 transition hover:text-brand-600 dark:text-slate-100 dark:hover:text-brand-300"
+              >
                 <Phone className="h-4 w-4 text-brand-600" /> {siteConfig.contact.phone}
-              </p>
+              </a>
             </div>
             <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 dark:border-slate-700 dark:bg-slate-900">
               <p className="inline-flex break-words items-center gap-2 text-sm font-medium text-slate-800 dark:text-slate-100">

@@ -256,7 +256,11 @@ export function AdminPanel() {
           )}
 
           {activeSection === "notices" && (
-            <AdminNotices />
+            <AdminNotices
+              apiRequest={apiRequest}
+              addToast={addToast}
+              requestConfirm={requestConfirm}
+            />
           )}
 
           {activeSection === "statistics" && (

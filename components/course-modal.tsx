@@ -13,15 +13,13 @@ import {
 } from "lucide-react";
 
 import { Course } from "./course-card";
+import { siteConfig } from "@/lib/site-config";
 
 interface CourseModalProps {
   course: Course | null;
   open: boolean;
   onClose: () => void;
 }
-
-const WHATSAPP_NUMBER =
-  process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "918658252927";
 
 export function CourseModal({
   course,
@@ -52,7 +50,9 @@ Please share the admission details.
 Thank you.`
   );
 
-  const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${message}`;
+  const rawPhone = siteConfig.socials.whatsapp.replace(/\D/g, "");
+  const phone = rawPhone.length === 10 ? `91${rawPhone}` : rawPhone;
+  const whatsappUrl = `https://wa.me/${phone}?text=${message}`;
 
   return (
     <AnimatePresence>
